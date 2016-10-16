@@ -6,6 +6,12 @@ var myMain = {
 	nameI:    0, //Current name index
 	nameMax: 50, //Number of previous names to store
 	saveKay: "saved_names", //key for local storage (pipe delimited)
+	facebook: 0, //flag for facebook, as well as index to URL
+	twitter:  1, //flag for twitter, as well as index to URL
+	socialUrls: [
+		'https://facebook.com/',
+		'https://twitter.com/',
+	], //TODO: make them postable URLs
 
 	/**
 	 * Displays the indicated card (zero based)
@@ -13,13 +19,14 @@ var myMain = {
 	 */
 	card: function(n) {
 		var cards = document.getElementById(this.cardID).childNodes;
+		var count = 0;
 		for (var i=0; i < cards.length; ++i) {
-console.log("Child " + (i + 1) + " of " + cards.length);
-console.log(cards[i]);
-			if (n == i)
-				cards[i].className = "";
-			else
-				cards[i].className = "invisible";
+			if (cards[i].tagName == "DIV") {
+				if (n == count++)
+					cards[i].className = "";
+				else
+					cards[i].className = "invisible";
+			}
 		}
 	},
 
@@ -94,5 +101,16 @@ out.innerHTML = JSON.stringify(a);
 	 */
 	replaceSavedNames: function(a) {
 		localStorage.setItem(this.saveKey, JSON.stringify(a));
+	},
+
+	/**
+	 * Posts current name to social media
+	 * @param type: flag to indicate Facebook or Twitter
+	 */
+	postTo: function(type) {
+		var url = myMain.socialUrls[type];
+		//TODO: format message based on type
+		//TODO: pre-brand message with our hashtag or app name
+console.log("Post '"+myMain.nameHist[myMain.nameI]+"' to: " + url);
 	},
 }
