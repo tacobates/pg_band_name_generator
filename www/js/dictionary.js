@@ -1,5 +1,5 @@
 /***************************************
- Phrase Formats:
+Phrase Formats:
  +N. Noun(s)           Gorilla
  +N. Noun Noun(s)      Gorilla Cake
  +N. Adjective Noun(s) Ugly Gorilla(s)
@@ -29,6 +29,13 @@
   5 - N's N            Gorilla Punchers' Breached Gorilla ("'s" vs "s'")
 
   + means to weigh more heavily so rand picks it more commonly
+
+Dependencies:
+  grammar_adj.js  - makes 2D array gramAdj [adjective, optional adverb form]
+  grammar_noun.js - makes 2D array gramNoun [noun, pluralizer (usually "s")]
+  grammar_num.js  - makes 1D array gramNum with #s we can display before a noun
+  grammar_op.js   - makes 1D array gramOp with conjunctions/prepositions
+  grammar_verb.js - makes 2D array gramVerb [verb,verbs,verbed,verber,optional non-standard gerund]
 ***************************************/
 
 var dictionary = {
@@ -51,17 +58,18 @@ var dictionary = {
 	 */
 	get: function() {
 		var numPhraseTypes = 7; //counting first type 3x for statistical skew
+		var br = '<br/>';
 		var i = 0;
 		var r = this.randRange(0,numPhraseTypes - 1);
 //console.log("Phrase Type: "+r);
 		if (r < ++i)
 			return this.getG();
 		if (r < ++i)
-			return this.getN() + ' ' + this.getRandItem(this.op) + ' ' + this.getN();
+			return this.getN() + br + this.getRandItem(gramOp) + br + this.getN();
 		if (r < ++i)
-			return this.getN() + ' ' + this.getG();
+			return this.getN() + br + this.getG();
 		if (r < ++i)
-			return this.possessive(this.getN()) + ' ' + this.getN();
+			return this.possessive(this.getN()) + br + this.getN();
 		//Save most common type for last, since there are 2 ranges left
 		return this.getN();
 	},
@@ -72,21 +80,21 @@ var dictionary = {
 	getG: function() {
 		var rtn = '';
 		var numPhraseTypes = 3;
-		var v1 = this.getRandItem(this.verb);
+		var v1 = this.getRandItem(gramVerb);
 		var alternate = (v1.length > this.iVerbing) ? v1[this.iVerbing] : ""; //may not exist
 		var g = this.gerund(v1[this.iVerb], alternate);
 		var r = this.randRange(0,numPhraseTypes - 1);
 		if (r < numPhraseTypes - 1) {
 			var a = [];
 			while (a.length <= this.iAdv)
-				a = this.getRandItem(this.adj);
+				a = this.getRandItem(gramAdj);
 			a = a[this.iAdv];
 			if (0 == r) //Gerund + Adverb (Fighting Muderously)
 				rtn = g + ' ' + a;
 			else (1 == r) //Adverb + Gerund (Murderously Fighting)
 				rtn = a + ' ' + g;
 		} else { //Gerund + Verber(s) (Fighting Punchers)
-			var v2 = this.getRandItem(this.verb);
+			var v2 = this.getRandItem(gramVerb);
 			v2 = this.plural(v2[this.iVerber], "s", 50);
 			rtn = g + ' ' + v2;
 		}
@@ -100,7 +108,7 @@ var dictionary = {
 		var types = 20;
 		var r = this.randRange(0, types - 1);
 		var i = 0;
-		var n1 = this.getRandItem(this.noun);
+		var n1 = this.getRandItem(gramNoun);
 		var pNoun = this.plural(n1[this.iNoun], n1[this.iNouns], 50); //50% chance to be pluralized
 //console.log("getN("+r+")");
 
@@ -111,81 +119,81 @@ var dictionary = {
 
 		++i; //2x
 		if (r < ++i) { //Noun + Noun(s)
-			var n2 = this.getRandItem(this.noun);
+			var n2 = this.getRandItem(gramNoun);
 			return n2[this.iNoun] + ' ' + pNoun;
 		}
 
 		++i; //2x
 		if (r < ++i) { //Adjective + Noun(s)
-			var ad1 = this.getRandItem(this.adj);
+			var ad1 = this.getRandItem(gramAdj);
 			return ad1[this.iAdj] + ' ' + pNoun;
 		}
 
 		if (r < ++i) { //Adj + Adj + Noun(s)
-			var ad1 = this.getRandItem(this.adj);
-			var ad2 = this.getRandItem(this.adj);
+			var ad1 = this.getRandItem(gramAdj);
+			var ad2 = this.getRandItem(gramAdj);
 			return ad1[this.iAdj] + ' ' + ad2[this.iAdj] + ' ' + pNoun;
 		}
 
 		if (r < ++i) { //Adv + Adj + Noun(s)
-			var ad1 = this.getRandItem(this.adj);
-			var ad2 = this.getRandItem(this.adj);
+			var ad1 = this.getRandItem(gramAdj);
+			var ad2 = this.getRandItem(gramAdj);
 			return ad1[this.iAdv] + ' ' + ad2[this.iAdj] + ' ' + pNoun;
 		}
 
 		++i; //2x
 		if (r < ++i) { //Gerund + Noun(s)
-			var v1 = this.getRandItem(this.verb);
+			var v1 = this.getRandItem(gramVerb);
 			var alternate = (v1.length > this.iVerbing) ? v1[this.iVerbing] : ""; //may not exist
 			var g = this.gerund(v1[this.iVerb], alternate);
 			return g + ' ' + pNoun;
 		}
 
 		if (r < ++i) { //Ger + Adj + Noun(s)
-			var v1 = this.getRandItem(this.verb);
+			var v1 = this.getRandItem(gramVerb);
 			var alternate = (v1.length > this.iVerbing) ? v1[this.iVerbing] : ""; //may not exist
 			var g = this.gerund(v1[this.iVerb], alternate);
-			var ad1 = this.getRandItem(this.adj);
+			var ad1 = this.getRandItem(gramAdj);
 			return g + ' ' + ad1[this.iAdj] + ' ' + pNoun;
 		}
 
 		if (r < ++i) { //Adj + Ger + Noun(s)
-			var v1 = this.getRandItem(this.verb);
+			var v1 = this.getRandItem(gramVerb);
 			var alternate = (v1.length > this.iVerbing) ? v1[this.iVerbing] : ""; //may not exist
 			var g = this.gerund(v1[this.iVerb], alternate);
-			var ad1 = this.getRandItem(this.adj);
+			var ad1 = this.getRandItem(gramAdj);
 			return ad1[this.iAdj] + ' ' + g + ' ' + pNoun;
 		}
 
 		if (r < ++i) { //Noun + Adj
-			var ad1 = this.getRandItem(this.adj);
+			var ad1 = this.getRandItem(gramAdj);
 			return n1[this.iNoun] + ' ' + ad1[this.iAdj];
 		}
 
 		if (r < ++i) { //Noun + Verber
-			var v1 = this.getRandItem(this.verb);
+			var v1 = this.getRandItem(gramVerb);
 			return n1[this.iNoun] + ' ' + v1[this.iVerber];
 		}
 
 		if (r < ++i) { //Noun + Verb(s)
-			var v1 = this.getRandItem(this.verb);
+			var v1 = this.getRandItem(gramVerb);
 			v1 = this.plural(v1[this.iVerb], v1[this.iVerbs], 50); //50% chance to be pluralized
 			return n1[this.iNoun] + ' ' + v1;
 		}
 
 		if (r < ++i) { //Noun + Verbed
-			var v1 = this.getRandItem(this.verb);
+			var v1 = this.getRandItem(gramVerb);
 			return n1[this.iNoun] + ' ' + v1[this.iVerbed];
 		}
 
 		++i; //2x
 		if (r < ++i) { //Verbed + Noun
-			var v1 = this.getRandItem(this.verb);
+			var v1 = this.getRandItem(gramVerb);
 			return v1[this.iVerbed] + ' ' + n1[this.iNoun];
 		}
 
 		if (r < ++i) { //Num Noun(s)
-			var num = this.getRandItem(this.nums);
+			var num = this.getRandItem(gramNum);
 			if (num == "1" || num == "One")
 				n1 = n1[this.iNoun];
 			else
@@ -194,8 +202,8 @@ var dictionary = {
 		}
 
 		if (r < ++i) { //Num Adj Noun(s)
-			var ad1 = this.getRandItem(this.adj);
-			var num = this.getRandItem(this.nums);
+			var ad1 = this.getRandItem(gramAdj);
+			var num = this.getRandItem(gramNum);
 			if (num == "1" || num == "One")
 				n1 = n1[this.iNoun];
 			else
@@ -265,119 +273,4 @@ var dictionary = {
 			max = 100;
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	},
-
-
-
-	/**************************** Attributes ****************************/
-
-	//Numbers we can display before a noun
-	nums: ["0","1","1.618","2","3","3.14","4","5","13","16","17","18","19","20",
-		"21","33","42","69","77","88","95","98","99","101","123","321",
-		"2k","2020","2099","3000","3k",
-		"Zero","One","Two","Three","Four","Five","Six","Seven",
-		"One & a half","Two & a half","Three & a half","Six & a half",
-		"Two & Two Thirds","Three & A Third","Four & Three Quarters","Five & A Quarter",
-		"A Thousand","One Million","1.21 Billion","8 Billion","20 Trillion",
-		"A Bajillion","A Gazillion","One Jillion","A Zillion",
-		"Infinite","Plethoric","Myriad","Innumerable","Numberless","Countless",
-		"Uncounted","Untold","Endless","Incalculable","Umpteen",
-		"A Couple","A Few","Many","Not Enough","Too Few","Too Many","Several",
-		"Scads of","A Bag of","A Heap -o-","Lotsa","Oodles of","A Horde of",
-		"Muchos",
-	],
-
-	//Conjunctions & Prepositional Phrases
-	op: ["and","or","not","by","in","of","from","with","without","the",
-		"and the","by the","in the","of the","from the","with the","without the",
-		"formerly","not quite","never",
-	],
-
-	//Adjective, Adverb
-	adj: [
-		["Almost",""], //No Adverb Equivalent
-		["Ancient","Anciently"],
-		["Angry","Angrily"],
-		["Cranky","Crankily"],
-		["Dirty","Dirtily"],
-		["Egregious","Egregiously"],
-		["Expendable","Expendably"],
-		["Fanatic","Fanatically"],
-		["Grungy","Grungily"],
-		["Harpy","Harpily"],
-		["Ignorant","Ignotantly"],
-		["Inverse","Inversly"],
-		["Juggling",""],
-		["Killable",""],
-		["Lovable","Lovably"],
-		["Murderous","Muderously"],
-		["Nice","Nicely"],
-		["Old","Oldly"],
-		["Patronizing","Patronizingly"], //TODO: do "ing" forms belong in Gerund too?
-		["Quirky","Quirkily"],
-		["Upsidedown","Inversely"],
-	],
-
-	//Verb, s, Verbed (past participle), Verber (verber can always append "s"), Gerund (none for normal "ing" [including drop "e" add "ing"])
-	verb: [
-		["Act","s","Acted","Actor"],
-		["Break","s","Broken","Breaker"],
-		["Crap","s","Crapped","Crapper"],
-		["Dig","s","Dug","Digger"],
-		["Eat","s","Eaten","Eater"],
-		["Fight","s","Fought","Fighter"],
-		["Grab","s","Grabbed","Grabber"],
-		["Hit","s","Hit","Hitter","Hitting"], //special Gerund, because of repeated consinant
-		["Ignore","s","Ignored","Ignorer"],
-		["Jump","s","Jumped","Jumper"],
-		["Kill","s","Killed","Killer"],
-		["Leave","s","Left","Leaver"],
-		["Make","s","Made","Maker"],
-		["Need","s","Needed","Needer"],
-		["Operate","s","Operated","Operator"],
-		["Please","s","Pleased","Pleaser"],
-		["Quit","s","Quit","Quitter","Quitting"],
-		["Rob","s","Robbed","Robber","Robbing"],
-		["Steal","s","Stolen","Stealer"],
-		["Take","s","Taken","Taker"],
-		["Unnerve","s","Unnerved","Unnerver"],
-		["Vaccinate","s","Vaccinated","Vaccinator"],
-		["Walk","s","Walked","Walker"],
-		["Yearn","s","Yearned","Yearner"],
-		["Zap","s","Zapped","Zapper","Zapping"],
-	],
-
-	//Noun, s (how to pluralize ["s", "es", or replacement word like "Mice" or "Oxen"] ["" for "sheep","sheep"])
-	noun: [
-		["Aardvark","s"],
-		["Bear","s"],
-		["Booger","s"],
-		["Cougar","s"],
-		["Doctor","s"],
-		["Elephant","s"],
-		["Flamingo","s"],
-		["Gorilla","s"],
-		["Hiccup","s"],
-		["Icepick","s"],
-		["Jumper","s"],
-		["Knave","s"],
-		["Leprechaun","s"],
-		["Midnight",""],
-		["Mouse","Mice"],
-		["Narwhal","s"],
-		["Operation","s"],
-		["Organization","s"],
-		["Ox","Oxen"],
-		["President","s"],
-		["Quail","s"],
-		["Rabbit","s"],
-		["Sheep",""],
-		["Tiger","s"],
-		["Umbrella","s"],
-		["Viper","s"],
-		["Weirdo","s"],
-		["Xray","s"],
-		["Yak","s"],
-		["Zebra","s"],
-	]
-	//Nothing after Nouns (we 
 }

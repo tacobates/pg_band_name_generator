@@ -33,7 +33,7 @@
 					<td><img src="/img/facebook.png" onclick="myMain.postTo(myMain.facebook)" /></td>
 				</tr></tbody></table>
 
-				<h2 id="out"></h2>
+				<h1 id="out"></h1>
 
 				<table class="tButtons absBottom"><tbody><tr>
 					<td><img src="/img/prev.png" onclick="myMain.prevName()" /></td>
@@ -55,17 +55,36 @@
 		</div>
 
 <!--TODO: delete this card-->
-<div>
-  TODO:
-    -See Saved/Favorites (card layout)
-      +Edit / Delete Faves
-    -Tweet / Post to FB
-    -Allow "Prev" button (i.e. save each display)
+<div class="invisible">
+TODO:
+	-Edit / Delete Faves
+		+on click show options:
+			*View in Main Display (view.png)
+			*Edit Text            (edit.png)
+			*Delete Entry         (delete.png)
+			*Move to Top          (to_top.png)
+			*Move to Bottom       (to_bottom.png)
+			*Post to Twitter      (twitter.png)
+			*Post to FB           (facebook.png)
+	-Tweet / Post to FB
+	-Populate ALL the words from old BNG
+   -TODO: Ad Pane at top!!! !!! !!!
+	-Make App Icon
+	-Test:
+		+Verify Launch Screen
+		+Verify diff devices / Screen sizes
+	-Submit:
+		+Account Creds?
 </div>
 	</div>
 
 <!--	 <script type="text/javascript" src="cordova.js"></script>-->
     <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/grammar_adj.js"></script>
+    <script type="text/javascript" src="js/grammar_noun.js"></script>
+    <script type="text/javascript" src="js/grammar_num.js"></script>
+    <script type="text/javascript" src="js/grammar_op.js"></script>
+    <script type="text/javascript" src="js/grammar_verb.js"></script>
     <script type="text/javascript" src="js/dictionary.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
     <script type="text/javascript">
